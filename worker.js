@@ -203,7 +203,7 @@ export default {
       return new Response(res.body, { status: res.status, headers: h });
     } catch (e) {
       const known = e instanceof E; if (!known) e = new E(500, 'DEBUG', 'DEBUG: ' + (e && e.message));
-      return send(known ? e.s : 500, { success: false, error: { code: known ? e.c : 'SERVER_ERROR', message: known ? e.message : 'Unexpected server error' } }, cx);
+      return send(known ? e.s : 500, { success: false, error: { code: known ? e.c : 'SERVER_ERROR', message: e.message } }, cx);
     }
   },
 };
