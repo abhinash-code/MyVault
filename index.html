@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-kUI6KDMheRyntuviqPMrTnRkFyyVaclg1BNG5z02RsY='; style-src 'sha256-B6VETxtCpKYQFq6Z+mAT4vWgv2kQ8uSF2AnylDkXvOs='; connect-src https:; img-src data:; base-uri 'none'; form-action 'none'">
+<title>MyVault</title>
+<style>
+:root{--bg:#f3f5f9;--surface:#fff;--surface2:#eef1f7;--ink:#141a2e;--muted:#5d667f;--line:#dde2ee;--primary:#3b4fe0;--primary-ink:#fff;--accent:#e8a317;--ok:#0e8f5f;--warn:#b86e00;--err:#c9302c;--side:#12152b;--side-ink:#c9cfe6;--r1:6px;--r2:10px;--r3:16px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--sh:0 1px 2px rgba(20,26,46,.06),0 6px 20px rgba(20,26,46,.05);--font:"Segoe UI Variable Text","Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",system-ui,sans-serif}
+[data-theme=dark]{--bg:#0c0e1d;--surface:#161a30;--surface2:#1d2240;--ink:#e8ebf8;--muted:#98a1c2;--line:#2a3052;--primary:#7b8cff;--primary-ink:#0c0e1d;--accent:#f2b83a;--ok:#3ecf94;--warn:#f0b04a;--err:#ff7a74;--side:#090b18;--sh:0 1px 2px rgba(0,0,0,.4)}
+*{box-sizing:border-box}html,body{margin:0}body{font:15px/1.5 var(--font);background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.btn{display:inline-flex;align-items:center;gap:var(--s2);min-height:40px;padding:0 var(--s4);border:1px solid var(--line);border-radius:var(--r2);background:var(--surface);font-weight:600}
+.btn:hover{background:var(--surface2)}.btn.pri{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}.btn.pri:hover{filter:brightness(1.08)}
+.btn.dng{color:var(--err)}.btn[disabled]{opacity:.55;cursor:default}.ib{width:40px;padding:0;justify-content:center;border-color:transparent;background:transparent}
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}.app.slim{grid-template-columns:68px 1fr}
+.side{background:var(--side);color:var(--side-ink);padding:var(--s4) var(--s3);position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column;gap:var(--s1)}
+.brand{display:flex;align-items:center;gap:var(--s3);padding:var(--s2);color:#fff;font-weight:700;font-size:18px;letter-spacing:-.2px;margin-bottom:var(--s4)}
+.brand svg{width:28px;height:28px;color:var(--accent)}
+.nav{display:flex;align-items:center;gap:var(--s3);min-height:42px;padding:0 var(--s3);border:0;border-radius:var(--r2);background:none;color:inherit;text-align:left;width:100%}
+.nav:hover{background:rgba(255,255,255,.07)}.nav[aria-current=page]{background:var(--primary);color:var(--primary-ink)}.nav .n{margin-left:auto;font-size:12px;opacity:.75}
+.slim .nav span,.slim .brand span,.slim .nav .n{display:none}.slim .nav{justify-content:center;padding:0}
+.main{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s5);background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top h1{font-size:19px;margin:0;white-space:nowrap}.sb{flex:1;max-width:520px;margin:0 auto;position:relative}
+.sb input{width:100%;height:42px;padding:0 40px 0 40px;border:1px solid var(--line);border-radius:var(--r2);background:var(--surface2)}.sb svg{position:absolute;left:12px;top:11px;color:var(--muted)}.sb .ib{position:absolute;right:0;top:1px}
+.content{padding:var(--s5);max-width:1280px;width:100%;margin:0 auto}
+.sync{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}.dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}.dot.bad{background:var(--err)}.dot.busy{background:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--s3);margin-bottom:var(--s5)}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r3);padding:var(--s4)}.stat b{display:block;font-size:28px;letter-spacing:-.5px}.stat span{color:var(--muted);font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}.sp{justify-content:space-between}
+h2{font-size:17px;margin:var(--s5) 0 var(--s3)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--s4)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r3);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s2);box-shadow:var(--sh);min-width:0}
+.card h3{margin:0;font-size:16px;overflow-wrap:anywhere}.card h3 button{all:unset;cursor:pointer}.card h3 button:hover{color:var(--primary)}
+.dom{color:var(--muted);font-size:13px;overflow-wrap:anywhere}.desc{color:var(--muted);margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 10px;border-radius:99px;background:var(--surface2);border:1px solid var(--line)}.chip i{width:8px;height:8px;border-radius:50%;background:var(--primary)}.chip.u{border-color:var(--primary);color:var(--primary)}
+.fav{color:var(--muted)}.fav[aria-pressed=true]{color:var(--accent)}.fav[aria-pressed=true] svg{fill:currentColor}
+mark{background:rgba(232,163,23,.35);color:inherit;border-radius:3px}
+.filters{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s4);align-items:center}
+select,input[type=text],input[type=url],textarea{width:100%;min-height:42px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r2);background:var(--surface)}.filters select{width:auto}
+label{display:block;font-weight:600;font-size:13px;margin:var(--s3) 0 4px}.err{color:var(--err);font-size:13px;min-height:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r3);padding:var(--s4);margin-bottom:var(--s3)}
+.empty{text-align:center;padding:var(--s6);color:var(--muted);border:1px dashed var(--line);border-radius:var(--r3)}.empty svg{width:36px;height:36px}
+.skel{height:130px;border-radius:var(--r3);background:linear-gradient(90deg,var(--surface2),var(--surface),var(--surface2));background-size:200% 100%;animation:sk 1.2s infinite}@keyframes sk{to{background-position:-200% 0}}
+dialog{border:1px solid var(--line);border-radius:var(--r3);background:var(--surface);color:var(--ink);padding:0;width:min(560px,calc(100vw - 24px));max-height:92vh;box-shadow:0 20px 60px rgba(0,0,0,.3)}dialog::backdrop{background:rgba(8,10,25,.55)}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:var(--s3) var(--s4);border-bottom:1px solid var(--line)}.dh h2{margin:0}.db{padding:var(--s4);overflow:auto;max-height:70vh}.df{display:flex;gap:var(--s2);justify-content:flex-end;flex-wrap:wrap;padding:var(--s3) var(--s4);border-top:1px solid var(--line)}
+.toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:50;max-width:calc(100vw - 32px)}.toast{padding:12px 16px;border-radius:var(--r2);background:var(--ink);color:var(--bg);box-shadow:var(--sh);display:flex;gap:8px;align-items:center}.toast.bad{background:var(--err);color:#fff}.toast.good{background:var(--ok);color:#fff}
+.login{min-height:100vh;display:grid;place-items:center;padding:var(--s4)}.login .panel{max-width:420px;text-align:center;padding:var(--s6)}.login svg.big{width:48px;height:48px;color:var(--primary)}
+.banner{background:var(--surface2);border:1px solid var(--err);color:var(--err);padding:var(--s3) var(--s4);border-radius:var(--r2);margin-bottom:var(--s4);display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+.menu,.bnav{display:none}
+@media(max-width:900px){
+.app,.app.slim{grid-template-columns:1fr}.side{position:fixed;left:0;top:0;z-index:20;width:264px;transform:translateX(-100%);transition:transform .2s}.app.open .side{transform:none}.app.slim .nav span,.app.slim .brand span,.app.slim .nav .n{display:inline}.app.slim .nav{justify-content:flex-start;padding:0 var(--s3)}
+.menu{display:inline-flex}.top{padding:var(--s2) var(--s3);flex-wrap:wrap}.top h1{font-size:16px;flex:1}.sb{order:5;flex-basis:100%;max-width:none}.sync span{display:none}.content{padding:var(--s3);padding-bottom:84px}
+.bnav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);z-index:6;padding-bottom:env(safe-area-inset-bottom)}.bnav button{flex:1;min-height:56px;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--muted)}.bnav button[aria-current=page]{color:var(--primary)}
+.grid{grid-template-columns:1fr}.top .addt{display:none}.toasts{bottom:72px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="root"></div><div class="toasts" id="toasts" aria-live="polite"></div>
+<script>
+'use strict';
+(() => {
+/* 1. CONFIG */
+const API_BASE = 'https://YOUR-WORKER.workers.dev'; // set to your Worker URL (no trailing slash)
+const VERSION = '1.0.0';
+/* 2. ICONS */
+const P = {
+vault:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5V6M12 18v-2.5M8.5 12H6M18 12h-2.5"/>',
+home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+circle:'<circle cx="12" cy="12" r="8"/>',check:'<path d="M5 12l5 5 9-10"/>',star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+folder:'<path d="M3 6h7l2 2h9v11H3z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/>',moon:'<path d="M20 14A8 8 0 0110 4a8 8 0 1010 10z"/>',
+sync:'<path d="M20 11a8 8 0 00-14-4L4 9M4 4v5h5M4 13a8 8 0 0014 4l2-2M20 20v-5h-5"/>',ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+shuffle:'<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/>',undo:'<path d="M9 14L4 9l5-5M4 9h11a5 5 0 010 10h-3"/>',out:'<path d="M9 4H4v16h5M16 8l4 4-4 4M20 12H9"/>',
+panel:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>'};
+const icon = (n, label) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('class', 'i'); if (label) { s.setAttribute('role', 'img'); s.setAttribute('aria-label', label); } else s.setAttribute('aria-hidden', 'true'); s.innerHTML = P[n]; return s; };
+/* 3. DOM HELPER (safe: text only, no innerHTML for data) */
+const h = (t, a = {}, ...c) => { const e = document.createElement(t); for (const [k, v] of Object.entries(a)) { if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (k === 'class') e.className = v; else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v); } for (const x of c.flat()) if (x != null && x !== false) e.append(x.nodeType ? x : document.createTextNode(x)); return e; };
+const ibtn = (n, label, fn, cls = '') => h('button', { type: 'button', class: 'btn ib ' + cls, 'aria-label': label, title: label, onclick: fn }, icon(n));
+/* 4. STATE */
+const S = { items: [], cats: [], settings: { theme: 'system', defaultSort: 'newest' }, view: 'dashboard', q: '', cat: '', tag: '', sort: 'newest', user: null, status: 'idle', syncedAt: null, error: null, slim: false, open: false };
+let token = sessionStorage.getItem('mv_token');
+/* 5. API */
+async function api(path, opt = {}) {
+  let r; try { r = await fetch(API_BASE + path, { method: opt.method || 'GET', headers: { Authorization: 'Bearer ' + token, ...(opt.body ? { 'Content-Type': 'application/json' } : {}) }, body: opt.body ? JSON.stringify(opt.body) : undefined, cache: 'no-store', referrerPolicy: 'no-referrer' }); }
+  catch { throw Object.assign(new Error('Cannot reach the server. Check your connection and retry.'), { code: 'NETWORK' }); }
+  const j = await r.json().catch(() => null);
+  if (r.status === 401) { logout(true); throw Object.assign(new Error('Session expired. Sign in again.'), { code: 'AUTH' }); }
+  if (!r.ok || !j || !j.success) throw Object.assign(new Error(j?.error?.message || 'Request failed (' + r.status + ')'), { code: j?.error?.code || 'ERR' });
+  return j;
+}
+/* 6. AUTH */
+function readHash() {
+  const p = new URLSearchParams(location.hash.slice(1)); if (!p.has('token') && !p.has('error')) return null;
+  history.replaceState(null, '', location.pathname + location.search);
+  if (p.get('token')) { token = p.get('token'); sessionStorage.setItem('mv_token', token); return null; } return p.get('error');
+}
+function logout(expired) { sessionStorage.removeItem('mv_token'); token = null; S.items = []; S.user = null; S.error = expired ? 'Your session expired. Sign in again.' : null; render(); if (!expired) fetch(API_BASE + '/auth/logout', { method: 'POST' }).catch(() => {}); }
+/* 7. DATA */
+async function sync(quiet) {
+  S.status = 'busy'; paintStatus();
+  try { const [me, lib] = await Promise.all([S.user ? { data: S.user } : api('/api/me'), api('/api/items')]); S.user = me.data; Object.assign(S, { items: lib.data.items, cats: lib.data.categories, settings: lib.data.settings, syncedAt: lib.data.syncedAt, status: 'ok', error: null });
+    if (!S.sorted) { S.sort = S.settings.defaultSort; S.sorted = true; } applyTheme(); }
+  catch (e) { S.status = 'bad'; if (e.code !== 'AUTH') { S.error = e.message; if (!quiet) toast(e.message, 'bad'); } }
+  render();
+}
+async function mutate(path, opt, okMsg) { try { const j = await api(path, opt); await sync(true); toast(okMsg || j.message, 'good'); return j; } catch (e) { toast(e.message, 'bad'); if (e.code === 'CONFLICT') sync(true); return null; } }
+/* 8. SEARCH / FILTER / SORT */
+const live = () => S.items.filter((i) => !i.deletedAt);
+const catOf = (id) => S.cats.find((c) => c.id === id) || { name: 'Other', color: '#6b7280' };
+const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
+const terms = () => S.q.toLowerCase().split(/\s+/).filter(Boolean);
+const hay = (i) => [i.name, i.url, i.description, i.notes, i.tags.join(' '), catOf(i.categoryId).name].join('\n').toLowerCase();
+const SORTS = { newest: ['Newest first', (a, b) => b.createdAt.localeCompare(a.createdAt)], oldest: ['Oldest first', (a, b) => a.createdAt.localeCompare(b.createdAt)], az: ['Name A-Z', (a, b) => a.name.localeCompare(b.name)], za: ['Name Z-A', (a, b) => b.name.localeCompare(a.name)], updated: ['Recently updated', (a, b) => b.updatedAt.localeCompare(a.updatedAt)], viewed: ['Recently viewed', (a, b) => (b.lastViewedAt || '').localeCompare(a.lastViewedAt || '')] };
+function list() {
+  const v = S.view, t = terms(); let a = v === 'trash' ? S.items.filter((i) => i.deletedAt) : live();
+  if (v === 'unread') a = a.filter((i) => i.status === 'unread'); if (v === 'read') a = a.filter((i) => i.status === 'read'); if (v === 'favorites') a = a.filter((i) => i.favorite);
+  if (S.cat) a = a.filter((i) => i.categoryId === S.cat); if (S.tag) a = a.filter((i) => i.tags.includes(S.tag));
+  if (t.length) a = a.filter((i) => { const x = hay(i); return t.every((w) => x.includes(w)); });
+  return a.sort(v === 'recent' ? SORTS.newest[1] : SORTS[S.sort][1]);
+}
+const hl = (text) => { const t = terms().map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')); if (!t.length) return text; return text.split(new RegExp('(' + t.join('|') + ')', 'gi')).map((p, k) => (k % 2 ? h('mark', {}, p) : p)); };
+const fmt = (d) => new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+/* 9. NOTIFICATIONS + MODALS */
+function toast(m, kind) { const e = h('div', { class: 'toast ' + (kind || ''), role: kind === 'bad' ? 'alert' : 'status' }, m); document.getElementById('toasts').append(e); setTimeout(() => e.remove(), kind === 'bad' ? 7000 : 3500); }
+function modal(title, body, foot) {
+  const d = h('dialog', { 'aria-label': title }, h('div', { class: 'dh' }, h('h2', {}, title), ibtn('x', 'Close', () => d.close())), h('div', { class: 'db' }, body), foot ? h('div', { class: 'df' }, foot) : null);
+  d.addEventListener('close', () => d.remove()); d.addEventListener('click', (e) => { if (e.target === d) d.close(); }); document.body.append(d); d.showModal(); return d;
+}
+const confirmDlg = (title, text, label, danger = true) => new Promise((res) => { let r = false; const d = modal(title, h('p', {}, text), [h('button', { type: 'button', class: 'btn', onclick: () => d.close() }, 'Cancel'), h('button', { type: 'button', class: 'btn pri' + (danger ? ' dng' : ''), onclick: () => { r = true; d.close(); } }, label)]); d.addEventListener('close', () => res(r)); });
+/* 10. ITEM ACTIONS */
+const patch = (i, b, m) => mutate('/api/items/' + i.id, { method: 'PATCH', body: { ...b, expectedUpdatedAt: i.updatedAt } }, m);
+const toggleFav = (i) => patch(i, { favorite: !i.favorite }, i.favorite ? 'Removed from Favorites' : 'Added to Favorites');
+const toggleRead = (i) => patch(i, { status: i.status === 'read' ? 'unread' : 'read' }, i.status === 'read' ? 'Marked as unread' : 'Marked as read');
+const trash = (i) => mutate('/api/items/' + i.id, { method: 'DELETE' }, 'Moved to Trash');
+const restore = (i) => mutate('/api/items/' + i.id + '/restore', { method: 'POST' }, 'Restored');
+const perm = async (i) => { if (await confirmDlg('Delete permanently?', '"' + i.name + '" will be removed forever. This cannot be undone.', 'Delete permanently')) mutate('/api/items/' + i.id + '/permanent-delete', { method: 'POST' }, 'Deleted permanently'); };
+const openRes = (i) => { window.open(i.url, '_blank', 'noopener,noreferrer'); api('/api/items/' + i.id + '/view', { method: 'POST' }).then(() => sync(true)).catch(() => {}); };
+/* 11. FORM */
+function itemForm(item) {
+  const e = !!item, v = item || { name: '', url: '', categoryId: S.cat || S.cats[0]?.id, description: '', notes: '', tags: [], status: 'unread', favorite: false };
+  const f = { name: h('input', { type: 'text', id: 'f-name', value: v.name, maxlength: 200, required: true, autocomplete: 'off' }), url: h('input', { type: 'url', id: 'f-url', value: v.url, maxlength: 2000, required: true, placeholder: 'https://example.com', inputmode: 'url' }),
+    cat: h('select', { id: 'f-cat' }, S.cats.map((c) => h('option', { value: c.id, selected: c.id === v.categoryId }, c.name))), desc: h('textarea', { id: 'f-desc', rows: 2, maxlength: 1000, placeholder: 'What is it and why is it useful?' }, v.description), notes: h('textarea', { id: 'f-notes', rows: 3, maxlength: 5000, placeholder: 'Only visible to you' }, v.notes),
+    tags: h('input', { type: 'text', id: 'f-tags', value: v.tags.join(', '), placeholder: 'ai, design, free (comma separated)' }), status: h('select', { id: 'f-status' }, h('option', { value: 'unread', selected: v.status === 'unread' }, 'Unread'), h('option', { value: 'read', selected: v.status === 'read' }, 'Read')), fav: h('input', { type: 'checkbox', id: 'f-fav', checked: v.favorite }) };
+  const msg = h('div', { class: 'err', role: 'alert' }); let dupOk = false;
+  const save = h('button', { type: 'submit', class: 'btn pri' }, e ? 'Save changes' : 'Save resource');
+  const form = h('form', { novalidate: true }, h('label', { for: 'f-name' }, 'Name *'), f.name, h('label', { for: 'f-url' }, 'URL *'), f.url, h('label', { for: 'f-cat' }, 'Category *'), f.cat, h('label', { for: 'f-desc' }, 'Description'), f.desc, h('label', { for: 'f-notes' }, 'Personal notes'), f.notes, h('label', { for: 'f-tags' }, 'Tags'), f.tags, h('label', { for: 'f-status' }, 'Status'), f.status, h('label', { class: 'row' }, f.fav, 'Mark as favorite'), msg, h('div', { class: 'df' }, h('button', { type: 'button', class: 'btn', onclick: () => d.close() }, 'Cancel'), save));
+  const d = modal(e ? 'Edit resource' : 'Add resource', form);
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault(); msg.textContent = ''; const name = f.name.value.trim(); let url; if (!name) { msg.textContent = 'Name is required.'; return f.name.focus(); }
+    try { const u = new URL(f.url.value.trim()); if (!['http:', 'https:'].includes(u.protocol)) throw 0; url = u.href; } catch { msg.textContent = 'Enter a valid http or https URL.'; return f.url.focus(); }
+    const dup = S.items.find((i) => i.url === url && (!e || i.id !== item.id)); if (dup && !dupOk) { msg.textContent = 'This URL is already saved as "' + dup.name + '". Press Save again to add it anyway.'; dupOk = true; return; }
+    const body = { name, url, categoryId: f.cat.value, description: f.desc.value, notes: f.notes.value, tags: f.tags.value.split(',').map((t) => t.trim()).filter(Boolean), status: f.status.value, favorite: f.fav.checked };
+    save.disabled = true; save.textContent = 'Saving...';
+    try { await api(e ? '/api/items/' + item.id : '/api/items', { method: e ? 'PATCH' : 'POST', body: e ? { ...body, expectedUpdatedAt: item.updatedAt } : body }); d.close(); await sync(true); toast(e ? 'Resource updated' : 'Resource saved to your vault', 'good'); }
+    catch (er) { msg.textContent = er.message; save.disabled = false; save.textContent = e ? 'Save changes' : 'Save resource'; }
+  }); f.name.focus();
+}
+function detail(i) {
+  const c = catOf(i.categoryId), row = (k, v) => h('p', {}, h('b', {}, k + ': '), v);
+  const d = modal(i.name, h('div', {}, row('URL', i.url), row('Category', c.name), row('Description', i.description || 'None'), row('Notes', i.notes || 'None'), h('div', { class: 'row' }, i.tags.map((t) => h('span', { class: 'chip' }, t))), row('Status', i.status === 'read' ? 'Read' : 'Unread'), row('Added', fmt(i.createdAt)), row('Updated', fmt(i.updatedAt))),
+    i.deletedAt ? [h('button', { class: 'btn', onclick: () => { d.close(); restore(i); } }, 'Restore'), h('button', { class: 'btn dng', onclick: () => { d.close(); perm(i); } }, 'Delete permanently')] :
+    [h('button', { class: 'btn pri', onclick: () => openRes(i) }, icon('ext'), 'Open resource'), h('button', { class: 'btn', onclick: () => { d.close(); itemForm(i); } }, icon('edit'), 'Edit'), h('button', { class: 'btn', onclick: () => { d.close(); toggleRead(i); } }, i.status === 'read' ? 'Mark as unread' : 'Mark as read'), h('button', { class: 'btn', onclick: () => { d.close(); toggleFav(i); } }, i.favorite ? 'Remove from favorites' : 'Add to favorites'), h('button', { class: 'btn dng', onclick: () => { d.close(); trash(i); } }, 'Delete')]);
+}
+function discover() {
+  const a = live(); if (!a.length) return toast('Save a resource first.');
+  const w = a.map((i) => (i.status === 'unread' ? 3 : 1) + (Date.now() - Date.parse(i.createdAt)) / 2.6e9); let r = Math.random() * w.reduce((x, y) => x + y, 0), pick = a[0]; for (let k = 0; k < a.length; k++) { r -= w[k]; if (r <= 0) { pick = a[k]; break; } }
+  const d = modal('Random discovery', h('div', {}, h('h3', {}, pick.name), h('p', { class: 'dom' }, host(pick.url)), h('p', {}, pick.description || 'No description'), h('div', { class: 'row' }, h('span', { class: 'chip' }, catOf(pick.categoryId).name), pick.tags.map((t) => h('span', { class: 'chip' }, t)))),
+    [h('button', { class: 'btn', onclick: () => { d.close(); discover(); } }, icon('shuffle'), 'Another'), h('button', { class: 'btn', onclick: () => { d.close(); detail(pick); } }, 'View details'), h('button', { class: 'btn pri', onclick: () => openRes(pick) }, icon('ext'), 'Open resource')]);
+}
+/* 12. RENDER */
+function card(i) {
+  const c = catOf(i.categoryId), dot = h('i'); dot.style.setProperty('background', c.color);
+  return h('article', { class: 'card' }, h('div', { class: 'row sp' }, h('h3', {}, h('button', { type: 'button', onclick: () => detail(i) }, hl(i.name))),
+    i.deletedAt ? null : h('button', { type: 'button', class: 'btn ib fav', 'aria-pressed': String(i.favorite), 'aria-label': i.favorite ? 'Remove from favorites' : 'Add to favorites', onclick: () => toggleFav(i) }, icon('star'))),
+    h('div', { class: 'dom' }, hl(host(i.url))), i.description ? h('p', { class: 'desc' }, hl(i.description)) : null,
+    h('div', { class: 'row' }, h('span', { class: 'chip' }, dot, hl(c.name)), h('span', { class: 'chip' + (i.status === 'unread' ? ' u' : '') }, i.status === 'unread' ? 'Unread' : 'Read'), i.tags.map((t) => h('button', { type: 'button', class: 'chip', onclick: () => { S.tag = t; S.view = 'all'; render(); } }, '#', hl(t)))),
+    h('div', { class: 'row sp' }, h('span', { class: 'dom' }, fmt(i.createdAt)), h('div', { class: 'row' }, i.deletedAt ? [h('button', { class: 'btn', onclick: () => restore(i) }, icon('undo'), 'Restore'), h('button', { class: 'btn dng', onclick: () => perm(i) }, 'Delete')] : [ibtn('ext', 'Open resource', () => openRes(i)), ibtn('edit', 'Edit', () => itemForm(i)), ibtn('trash', 'Move to Trash', () => trash(i))])));
+}
+const empty = (t, s, act) => h('div', { class: 'empty' }, icon('vault'), h('h3', {}, t), h('p', {}, s), act);
+const grid = (a) => h('div', { class: 'grid' }, a.map(card));
+function dashboard() {
+  const a = live(), wk = Date.now() - 6048e5, N = [['Saved', a.length], ['Unread', a.filter((i) => i.status === 'unread').length], ['Read', a.filter((i) => i.status === 'read').length], ['Favorites', a.filter((i) => i.favorite).length], ['Categories', S.cats.length], ['Added this week', a.filter((i) => Date.parse(i.createdAt) > wk).length]];
+  const rec = [...a].sort(SORTS.newest[1]).slice(0, 6);
+  return h('div', {}, h('div', { class: 'stats' }, N.map(([k, n]) => h('div', { class: 'stat' }, h('b', {}, String(n)), h('span', {}, k)))),
+    h('div', { class: 'row' }, h('button', { class: 'btn pri', onclick: () => itemForm() }, icon('plus'), 'Add resource'), nb('Browse library', 'all', 'grid'), nb('Favorites', 'favorites', 'star'), nb('Unread', 'unread', 'circle'), h('button', { class: 'btn', onclick: discover }, icon('shuffle'), 'Discover')),
+    h('h2', {}, 'Recently added'), rec.length ? grid(rec) : empty('Your vault is empty', 'Save the first useful link you found.', h('button', { class: 'btn pri', onclick: () => itemForm() }, icon('plus'), 'Add resource')));
+}
+const nb = (t, v, ic) => h('button', { class: 'btn', onclick: () => go(v) }, icon(ic), t);
+function library() {
+  const a = list(), tags = [...new Set(live().flatMap((i) => i.tags))].sort(), any = S.q || S.cat || S.tag;
+  const sel = (v, set, opts, ph) => h('select', { 'aria-label': ph, onchange: (e) => { set(e.target.value); render(); } }, ph ? h('option', { value: '' }, ph) : null, opts.map(([k, l]) => h('option', { value: k, selected: k === v }, l)));
+  return h('div', {}, h('div', { class: 'filters' }, sel(S.cat, (v) => (S.cat = v), S.cats.map((c) => [c.id, c.name]), 'All categories'), sel(S.tag, (v) => (S.tag = v), tags.map((t) => [t, '#' + t]), 'All tags'), sel(S.sort, (v) => (S.sort = v), Object.entries(SORTS).map(([k, x]) => [k, x[0]])),
+    any ? h('button', { class: 'btn', onclick: () => { S.q = S.cat = S.tag = ''; const q = document.getElementById('q'); if (q) q.value = ''; render(); } }, 'Clear filters') : null,
+    S.view === 'trash' && a.length ? h('button', { class: 'btn dng', onclick: async () => { if (await confirmDlg('Empty Trash?', a.length + ' item(s) will be deleted forever.', 'Empty Trash')) mutate('/api/trash/empty', { method: 'POST' }, 'Trash emptied'); } }, 'Empty Trash') : null, h('span', { class: 'dom', role: 'status' }, a.length + (a.length === 1 ? ' result' : ' results'))),
+    a.length ? grid(a) : any ? empty('No matches', 'Try different words or clear the filters.') : empty(S.view === 'trash' ? 'Trash is empty' : 'Nothing here yet', S.view === 'trash' ? 'Deleted resources appear here.' : 'Resources you save will appear here.', S.view === 'trash' ? null : h('button', { class: 'btn pri', onclick: () => itemForm() }, icon('plus'), 'Add resource')));
+}
+function categories() {
+  const nameIn = h('input', { type: 'text', id: 'nc', maxlength: 40, placeholder: 'New category name' }), col = h('input', { type: 'color', value: '#3b4fe0', 'aria-label': 'Category color' });
+  return h('div', {}, h('div', { class: 'panel row' }, h('div', { style: null }, nameIn), col, h('button', { class: 'btn pri', onclick: async () => { if (nameIn.value.trim()) await mutate('/api/categories', { method: 'POST', body: { name: nameIn.value, color: col.value } }, 'Category added'); } }, icon('plus'), 'Add category')),
+    S.cats.map((c) => { const n = S.items.filter((i) => i.categoryId === c.id).length, dot = h('i'); dot.style.setProperty('background', c.color); const cc = h('input', { type: 'color', value: c.color, 'aria-label': 'Color for ' + c.name, onchange: (e) => mutate('/api/categories/' + c.id, { method: 'PATCH', body: { color: e.target.value } }, 'Category updated') });
+      return h('div', { class: 'panel row sp' }, h('button', { class: 'btn', onclick: () => { S.cat = c.id; go('all'); } }, h('span', { class: 'chip' }, dot), c.name + ' (' + n + ')'), h('div', { class: 'row' }, cc,
+        h('button', { class: 'btn', onclick: () => catDlg(c, 'rename') }, icon('edit'), 'Rename'), c.builtin ? null : h('button', { class: 'btn dng', onclick: () => catDlg(c, 'delete', n) }, icon('trash'), 'Delete'))); }));
+}
+function catDlg(c, mode, n) {
+  if (mode === 'rename') { const i = h('input', { type: 'text', value: c.name, maxlength: 40, 'aria-label': 'Category name' }); const d = modal('Rename category', i, [h('button', { class: 'btn pri', onclick: async () => { d.close(); await mutate('/api/categories/' + c.id, { method: 'PATCH', body: { name: i.value } }, 'Category renamed'); } }, 'Save')]); return; }
+  const sel = h('select', { 'aria-label': 'Move resources to' }, S.cats.filter((x) => x.id !== c.id).map((x) => h('option', { value: x.id }, x.name)));
+  const d = modal('Delete category', h('div', {}, h('p', {}, n ? n + ' resource(s) use "' + c.name + '". Move them to:' : 'Delete "' + c.name + '"?'), n ? sel : null), [h('button', { class: 'btn dng', onclick: async () => { d.close(); await mutate('/api/categories/' + c.id + (n ? '?reassignTo=' + encodeURIComponent(sel.value) : ''), { method: 'DELETE' }, 'Category deleted'); } }, 'Delete category')]);
+}
+function exportJson() { api('/api/backup/export').then((j) => { const a = h('a', { href: URL.createObjectURL(new Blob([JSON.stringify(j.data, null, 2)], { type: 'application/json' })), download: 'myvault-backup-' + new Date().toISOString().slice(0, 10) + '.json' }); document.body.append(a); a.click(); a.remove(); toast('Backup downloaded', 'good'); }).catch((e) => toast(e.message, 'bad')); }
+function importJson() {
+  const f = h('input', { type: 'file', accept: 'application/json' }); f.addEventListener('change', async () => {
+    try { const b = JSON.parse(await f.files[0].text()); if (b.schema !== 1 || !Array.isArray(b.items)) throw 0; const ids = new Set(S.items.map((i) => i.id)), urls = new Set(S.items.map((i) => i.url)); const bad = b.items.filter((i) => !i || typeof i.name !== 'string' || !/^https?:\/\//i.test(i.url || '')).length; const dI = b.items.filter((i) => ids.has(i.id)).length, dU = b.items.filter((i) => urls.has(i.url)).length;
+      if (await confirmDlg('Import backup (merge)', b.items.length + ' records found. Invalid: ' + bad + '. Duplicate IDs: ' + dI + '. Duplicate URLs: ' + dU + '. Duplicates are skipped; existing data is never overwritten.', 'Merge into library', false)) mutate('/api/backup/import', { method: 'POST', body: b }); } catch { toast('This is not a valid MyVault backup file.', 'bad'); }
+  }); f.click();
+}
+function settings() {
+  const setS = (b) => api('/api/settings', { method: 'PUT', body: b }).then((j) => { S.settings = j.data; applyTheme(); toast('Settings saved', 'good'); render(); }).catch((e) => toast(e.message, 'bad'));
+  const p = (t, ...c) => h('div', { class: 'panel' }, h('h3', {}, t), ...c);
+  return h('div', {}, p('Appearance', h('div', { class: 'row' }, ['light', 'dark', 'system'].map((t) => h('button', { class: 'btn' + (S.settings.theme === t ? ' pri' : ''), 'aria-pressed': String(S.settings.theme === t), onclick: () => setS({ theme: t }) }, t[0].toUpperCase() + t.slice(1))))),
+    p('Library', h('label', { for: 'ds' }, 'Default sorting'), h('select', { id: 'ds', onchange: (e) => setS({ defaultSort: e.target.value }) }, Object.entries(SORTS).map(([k, x]) => h('option', { value: k, selected: S.settings.defaultSort === k }, x[0]))), h('p', {}, h('button', { class: 'btn', onclick: () => go('categories') }, icon('folder'), 'Manage categories'))),
+    p('Account', h('p', {}, 'Signed in as ', h('b', {}, S.user?.login || ''), '. Session ends ', S.user ? new Date(S.user.expiresAt).toLocaleTimeString() : '', '.'), h('p', { class: 'dom' }, 'Signing out clears this device. A copied token stays valid until it expires.'), h('button', { class: 'btn', onclick: () => logout() }, icon('out'), 'Sign out')),
+    p('Data', h('p', { class: 'dom' }, 'Cloud storage: ' + (S.status === 'ok' ? 'connected' : 'problem') + '. Last sync: ' + (S.syncedAt ? new Date(S.syncedAt).toLocaleString() : 'never')), h('div', { class: 'row' }, h('button', { class: 'btn', onclick: exportJson }, 'Export JSON'), h('button', { class: 'btn', onclick: importJson }, 'Import JSON'), h('button', { class: 'btn', onclick: () => sync() }, icon('sync'), 'Sync now'))),
+    p('About', h('p', {}, 'MyVault ' + VERSION + ' - your personal internet library. Data lives in your private GitHub repository.')));
+}
+const NAV = [['dashboard', 'Dashboard', 'home'], ['all', 'All Items', 'grid'], ['unread', 'Unread', 'circle'], ['read', 'Read', 'check'], ['favorites', 'Favorites', 'star'], ['categories', 'Categories', 'folder'], ['recent', 'Recently Added', 'clock'], ['trash', 'Trash', 'trash'], ['settings', 'Settings', 'gear']];
+const go = (v) => { S.view = v; S.open = false; if (v !== 'all') { S.tag = ''; if (v !== 'categories') S.cat = ''; } render(); window.scrollTo(0, 0); };
+function paintStatus() { const d = document.getElementById('sdot'); if (d) d.className = 'dot ' + (S.status === 'busy' ? 'busy' : S.status === 'bad' ? 'bad' : ''); }
+function applyTheme() { const t = S.settings.theme, dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.dataset.theme = dark ? 'dark' : 'light'; }
+function loginView(err) {
+  return h('main', { class: 'login' }, h('div', { class: 'panel' }, icon('vault'), h('h1', {}, 'MyVault'), h('p', { class: 'dom' }, 'Your personal internet library. Sign in with your GitHub account to open it.'), err ? h('p', { class: 'err', role: 'alert' }, err) : null,
+    API_BASE.includes('YOUR-WORKER') ? h('p', { class: 'err' }, 'Set API_BASE in index.html to your Worker URL first.') : h('a', { class: 'btn pri', href: API_BASE + '/auth/github/start' }, 'Continue with GitHub')));
+}
+function render() {
+  const root = document.getElementById('root'), prevQ = document.getElementById('q'), focusQ = prevQ && document.activeElement === prevQ;
+  if (!token) { root.replaceChildren(loginView(S.error)); applyTheme(); return; }
+  const titles = Object.fromEntries(NAV.map((n) => [n[0], n[1]])); const total = (v) => ({ all: live().length, unread: live().filter((i) => i.status === 'unread').length, favorites: live().filter((i) => i.favorite).length, trash: S.items.filter((i) => i.deletedAt).length }[v]);
+  let page; if (S.status === 'idle' || (S.status === 'busy' && !S.syncedAt)) page = h('div', { class: 'grid' }, [1, 2, 3, 4, 5, 6].map(() => h('div', { class: 'skel' })));
+  else if (S.view === 'dashboard') page = dashboard(); else if (S.view === 'settings') page = settings(); else if (S.view === 'categories') page = categories(); else page = library();
+  const q = h('input', { type: 'text', id: 'q', value: S.q, placeholder: 'Search name, URL, tags, notes', 'aria-label': 'Search library', autocomplete: 'off' }); let tm; q.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(() => { S.q = q.value; if (S.q && ['dashboard', 'settings', 'categories'].includes(S.view)) S.view = 'all'; render(); }, 200); });
+  const app = h('div', { class: 'app' + (S.slim ? ' slim' : '') + (S.open ? ' open' : '') },
+    h('nav', { class: 'side', 'aria-label': 'Main' }, h('div', { class: 'brand' }, icon('vault'), h('span', {}, 'MyVault')), NAV.map(([v, t, ic]) => h('button', { class: 'nav', 'aria-current': S.view === v ? 'page' : null, onclick: () => go(v), title: t }, icon(ic), h('span', {}, t), total(v) != null ? h('span', { class: 'n' }, String(total(v))) : null)),
+      h('div', { style: null }, h('button', { class: 'nav', onclick: () => { S.slim = !S.slim; render(); }, title: 'Collapse sidebar' }, icon('panel'), h('span', {}, 'Collapse')))),
+    h('div', { class: 'main' }, h('header', { class: 'top' }, ibtn('menu', 'Open menu', () => { S.open = !S.open; render(); }, 'menu'), h('h1', {}, titles[S.view]),
+      h('div', { class: 'sb' }, icon('search'), q, S.q ? ibtn('x', 'Clear search', () => { S.q = ''; render(); }) : null),
+      h('div', { class: 'sync', role: 'status' }, h('i', { class: 'dot', id: 'sdot' }), h('span', {}, S.syncedAt ? 'Synced ' + new Date(S.syncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Not synced')),
+      ibtn('sync', 'Sync now', () => sync()), ibtn(document.documentElement.dataset.theme === 'dark' ? 'sun' : 'moon', 'Toggle theme', () => { const dark = document.documentElement.dataset.theme === 'dark'; api('/api/settings', { method: 'PUT', body: { theme: dark ? 'light' : 'dark' } }).then((j) => { S.settings = j.data; applyTheme(); render(); }).catch((e) => toast(e.message, 'bad')); }),
+      h('button', { class: 'btn pri addt', onclick: () => itemForm() }, icon('plus'), 'Add resource')),
+      h('main', { class: 'content' }, S.error ? h('div', { class: 'banner', role: 'alert' }, S.error, h('button', { class: 'btn', onclick: () => sync() }, 'Retry')) : null, page)),
+    h('nav', { class: 'bnav', 'aria-label': 'Quick' }, [['dashboard', 'Home', 'home'], ['all', 'Library', 'grid'], ['favorites', 'Favorites', 'star']].map(([v, t, ic]) => h('button', { 'aria-current': S.view === v ? 'page' : null, onclick: () => go(v) }, icon(ic), t)), h('button', { onclick: () => itemForm() }, icon('plus'), 'Add'), h('button', { onclick: () => go('settings') }, icon('gear'), 'Settings')));
+  root.replaceChildren(app); paintStatus(); if (focusQ) { const nq = document.getElementById('q'); nq.focus(); nq.setSelectionRange(nq.value.length, nq.value.length); }
+}
+/* 13. INIT */
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { applyTheme(); });
+document.addEventListener('keydown', (e) => { if (e.key === '/' && !/input|textarea|select/i.test(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('q')?.focus(); } });
+const hashErr = readHash(); if (hashErr) S.error = hashErr; applyTheme(); render(); if (token) sync();
+})();
+</script>
+</body>
+</html>

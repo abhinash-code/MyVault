@@ -1,0 +1,14 @@
+{
+  "name": "myvault-api",
+  "main": "worker.js",
+  "compatibility_date": "2025-01-01",
+  "vars": {
+    "GITHUB_OWNER": "YOUR_GITHUB_USERNAME",
+    "GITHUB_DATA_REPO": "MyVault-Data",
+    "GITHUB_DATA_BRANCH": "main",
+    "ALLOWED_GITHUB_ID": "YOUR_NUMERIC_GITHUB_ID",
+    "FRONTEND_ORIGIN": "https://YOUR_USERNAME.github.io",
+    "FRONTEND_URL": "https://YOUR_USERNAME.github.io/MyVault/",
+    "GITHUB_OAUTH_CLIENT_ID": "YOUR_OAUTH_CLIENT_ID"
+  }
+}
