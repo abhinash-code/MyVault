@@ -202,7 +202,7 @@ export default {
       const h = new Headers(res.headers); for (const [k, v] of Object.entries(cx)) h.set(k, v);
       return new Response(res.body, { status: res.status, headers: h });
     } catch (e) {
-      const known = e instanceof E; if (!known) console.error('Unhandled', e?.message);
+      const known = e instanceof E; if (!known) e = new E(500, 'DEBUG', 'DEBUG: ' + (e && e.message));
       return send(known ? e.s : 500, { success: false, error: { code: known ? e.c : 'SERVER_ERROR', message: known ? e.message : 'Unexpected server error' } }, cx);
     }
   },
